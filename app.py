@@ -260,10 +260,7 @@ def logout():
     logout_user()
     flash("Logged out successfully!", "success")
     return redirect(url_for('login'))
-
-# Run the app
- if __name__ == '__main__':
-    # Get the port from the environment variable set by Render
+if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))  # Default to 5000 if not provided
     app.run(host="0.0.0.0", port=port)
     app.run(debug=True)
