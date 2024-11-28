@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Tasks</title>
+    <style>
+        /* Shared styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+        }
+
+        header {
+            background-color: #6c63ff;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+        header a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        fieldset {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        legend {
+            font-size: 1.2em;
+            padding: 0 10px;
+            color: #6c63ff;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #6c63ff;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #5a52d4;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f9f9f9;
+        }
+
+        .actions button {
+            padding: 5px 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .actions .update {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .actions .update:hover {
+            background-color: #218838;
+        }
+
+        .actions .delete {
+            background-color: #ff4b5c;
+            color: white;
+        }
+
+        .actions .delete:hover {
+            background-color: #e0434c;
+        }
+
+        .flash-messages {
+            background-color: #ffef96;
+            color: #856404;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ffeeba;
+            border-radius: 5px;
+        }
+
+        a {
+            color: #6c63ff;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            table th, table td {
+                font-size: 0.9em;
+            }
+
+            .actions button {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Manage Tasks</h1>
+        <nav>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('profile') }}">Profile</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Your Tasks</h2>
+
+        <!-- Flash messages for feedback -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <p><strong>{{ category.capitalize() }}:</strong> {{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Task creation form -->
+        <form method="POST">
+            <fieldset>
+                <legend>Create a New Task</legend>
+                <label for="task_name">Task Name:</label>
+                <input type="text" id="task_name" name="task_name" required placeholder="Enter task name">
+                
+                <label for="task_description">Task Description:</label>
+                <textarea id="task_description" name="task_description" rows="4" required placeholder="Enter task description"></textarea>
+                
+                <label for="deadline">Deadline:</label>
+                <input type="date" id="deadline" name="deadline" required placeholder="Enter deadline">
+
+                <button type="submit">Add Task</button>
+            </fieldset>
+        </form>
+
+        <!-- Display tasks -->
+        {% if tasks|length > 0 %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Task Name</th>
+                    <th>Task Description</th>
+                    <th>Deadline</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.task_name }}</td>
+                    <td>{{ task.task_description }}</td>
+                    <td>
+                        {% if task.deadline %}
+                            {{ task.deadline.strftime('%Y-%m-%d') }}
+                        {% else %}
+                            No deadline set
+                        {% endif %}
+                    </td>
+                    <td class="actions">
+                        <form action="{{ url_for('update_task', task_id=task._id) }}" method="POST" style="display: inline;">
+                            <input type="text" name="task_name" placeholder="New name" aria-label="New task name" required>
+                            <input type="text" name="task_description" placeholder="New description" aria-label="New task description" required>
+                            <input type="date" name="deadline" value="{{ task.deadline.strftime('%Y-%m-%d') if task.deadline else '' }}" aria-label="New task deadline">
+                            <button type="submit" class="update">Update</button>
+                        </form>
+                        <form action="{{ url_for('delete_task', task_id=task._id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="delete" aria-label="Delete task">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No tasks found. Start by creating a new task!</p>
+        {% endif %}
+    </main>
+</body>
+</html>

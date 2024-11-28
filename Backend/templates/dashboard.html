@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        /* Reset and body styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header styles */
+        header {
+            background-color: #6c63ff;
+            padding: 1rem;
+            color: white;
+            text-align: center;
+        }
+
+        header nav {
+            margin-top: 10px;
+        }
+
+        header nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+
+        header nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Main content styles */
+        main {
+            padding: 20px;
+        }
+
+        h1 {
+            color: #444;
+        }
+
+        /* Button styles */
+        a.button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #6c63ff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        a.button:hover {
+            background-color: #5852d6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <h1>Welcome to Your Dashboard</h1>
+        <nav>
+            <a href="{{ url_for('tasks') }}">Manage Tasks</a>
+            <a href="{{ url_for('profile') }}">View Profile</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <h2>Hello, {{ current_user.first_name }} {{ current_user.last_name }}</h2>
+        <p>Welcome to your dashboard! Use the navigation bar to manage your tasks or view your profile.</p>
+        <a href="{{ url_for('tasks') }}" class="button">Go to Tasks</a>
+    </main>
+</body>
+</html>
