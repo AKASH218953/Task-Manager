@@ -12,8 +12,8 @@ app = Flask(__name__)
 
 # Configure MongoDB and JWT
 app.config["MONGO_URI"] = "mongodb+srv://Akash:t53xMtyhiW1toBve@cluster0.nlrrn.mongodb.net/users?retryWrites=true&w=majority"
-app.config["JWT_SECRET_KEY"] = "your_secret_key"             # Replace with a secure key
-app.secret_key = "your_flask_secret_key"  # Add a secret key for Flask sessions
+app.config["JWT_SECRET_KEY"] = "your_secret_key"  # Replace with a secure key
+app.secret_key = "your_flask_secret_key"          # Add a secret key for Flask sessions
 
 # Initialize extensions
 bcrypt = Bcrypt(app)
@@ -54,7 +54,9 @@ def load_user(user_id):
 
 @app.route('/')
 def home():
-    return redirect(url_for('dashboard'))  # Redirect to dashboard
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))  # Redirect to dashboard if logged in
+    return redirect(url_for('login'))  # Otherwise, redirect to login page
 
 # Register Route
 @app.route('/register', methods=['GET', 'POST'])
@@ -127,7 +129,7 @@ def tasks():
     if request.method == 'POST':
         task_name = request.form.get('task_name')
         task_description = request.form.get('task_description')
-        deadline = request.form.get('deadline')  # Get the deadline from the form
+        deadline = request.form.get('deadline')
 
         if not task_name or not task_description or not deadline:
             flash("Task name, description, and deadline are required.", "danger")
@@ -144,7 +146,7 @@ def tasks():
             "task_description": task_description,
             "status": "pending",
             "created_at": datetime.utcnow(),
-            "deadline": deadline_date,  # Store the deadline
+            "deadline": deadline_date,
             "user_id": current_user.id
         })
 
@@ -161,8 +163,6 @@ def tasks():
 
     return render_template('tasks.html', tasks=tasks)
 
-
-
 # Update Task Route
 @app.route('/update_task/<task_id>', methods=['POST'])
 @login_required
@@ -176,7 +176,6 @@ def update_task(task_id):
         return redirect(url_for('tasks'))
 
     try:
-        # Validate and parse the deadline
         deadline_date = datetime.strptime(deadline, '%Y-%m-%d')
     except ValueError:
         flash("Invalid deadline format. Use YYYY-MM-DD.", "danger")
@@ -218,7 +217,6 @@ def delete_task(task_id):
 @login_required
 def profile():
     if request.method == 'POST':
-        # Get updated user information from the form
         first_name = request.form.get('first_name')
         last_name = request.form.get('last_name')
         email = request.form.get('email')
@@ -253,7 +251,6 @@ def profile():
     # Display the current user details
     return render_template('profile.html', user=current_user)
 
-
 # Logout Route
 @app.route('/logout')
 @login_required
@@ -261,6 +258,8 @@ def logout():
     logout_user()
     flash("Logged out successfully!", "success")
     return redirect(url_for('login'))
+
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))  # Default to 5000 if not provided
     app.run(host="0.0.0.0", port=port)
