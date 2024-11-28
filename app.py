@@ -1,4 +1,3 @@
-import os
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
@@ -11,7 +10,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Configure MongoDB and JWT
-app.config["MONGO_URI"] = "mongodb+srv://anumoluakash2004:<db_password>@test2.fmw1n.mongodb.net/"  
+app.config["MONGO_URI"] = "mongodb+srv://Akash:t53xMtyhiW1toBve@cluster0.nlrrn.mongodb.net/users?retryWrites=true&w=majority"
 app.config["JWT_SECRET_KEY"] = "your_secret_key"             # Replace with a secure key
 app.secret_key = "your_flask_secret_key"  # Add a secret key for Flask sessions
 
