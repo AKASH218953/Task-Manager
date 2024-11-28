@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
