@@ -11,7 +11,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Configure MongoDB and JWT
-app.config["MONGO_URI"] = "mongodb://localhost:27017/taskdb"  
+app.config["MONGO_URI"] = "mongodb+srv://anumoluakash2004:<db_password>@test2.fmw1n.mongodb.net/"  
 app.config["JWT_SECRET_KEY"] = "your_secret_key"             # Replace with a secure key
 app.secret_key = "your_flask_secret_key"  # Add a secret key for Flask sessions
 
